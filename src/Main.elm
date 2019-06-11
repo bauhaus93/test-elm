@@ -11,7 +11,6 @@ import Thread exposing (..)
 type Model
     = ShowThreadList (List Thread)
 
-
 init : Model
 init =
     ShowThreadList initial_threadlist

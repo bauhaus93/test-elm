@@ -1,0 +1,34 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build-elm",
+            "type": "shell",
+            "linux": {
+                "command": "scripts/build_elm.sh"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "copy-assets",
+            "type": "shell",
+            "dependsOn": "build-elm",
+            "linux": {
+                "command": "cp -r assets/ ../backend/"
+            },
+            "presentation": {
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "problemMatcher": []
+        },
+    ]
+}
