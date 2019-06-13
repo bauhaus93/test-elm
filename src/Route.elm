@@ -18,5 +18,4 @@ parser =
 
 from_url: Url.Url -> Maybe Route
 from_url url =
-    { url | path = Maybe.withDefault "" url.fragment, fragment = Nothing }
-    |> Parser.parse parser
+    Parser.parse parser url
