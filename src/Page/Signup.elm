@@ -9,8 +9,10 @@ import Url
 import Json.Decode exposing (Decoder, field, string)
 
 import Session
-import User
 import Page
+
+import Api.Session
+import Api.Login
 
 -- Model
 
@@ -45,7 +47,7 @@ type Msg
     | UsernameChanged String
     | EmailChanged String
     | PasswordChanged String
-    | GotReply (Result Http.Error User.User)
+    | GotReply (Result Http.Error Api.Session.Session)
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -55,13 +57,13 @@ update msg model =
         UsernameChanged username ->
             ({ model | username = username }, Cmd.none)
         EmailChanged email ->
-            ({ model | username = email }, Cmd.none)
+            ({ model | email = email }, Cmd.none)
         PasswordChanged password ->
-            ({ model | username = password }, Cmd.none)
+            ({ model | password = password }, Cmd.none)
         GotReply result ->
             case result of
-                Ok user ->
-                    ({ model | session = Session.login user model.session }, Cmd.none)
+                Ok api_session ->
+                    ({ model | session = (Session.login api_session)  model.session, errors = api_session.id :: model.errors }, Cmd.none)
                 Err _ ->
                     ({ model | errors = "Could not create user" :: model.errors}, Cmd.none)
 
@@ -71,10 +73,20 @@ request_signup model =
     ( { model | errors = [] }
     , Http.post
         { url = "signup"
-        , body = Http.emptyBody
-        , expect = Http.expectJson GotReply User.decoder
+        , body = create_request model
+        , expect = Http.expectJson GotReply Api.Session.decoder
         }
     )
+
+create_request: Model -> Http.Body
+create_request model =
+    let
+        login =
+            { user = { name = model.username, email = model.email }
+            , password = model.password
+            }
+    in
+    Http.jsonBody (Api.Login.encode login)
 
 -- SUBSCRIPTIONS
 
