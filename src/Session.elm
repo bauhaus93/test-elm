@@ -1,4 +1,4 @@
-module Session exposing (Session(..), user, nav_key)
+module Session exposing (Session(..), login, user, nav_key)
 import Browser.Navigation as Nav
 
 import User
@@ -6,6 +6,10 @@ import User
 type Session
     = LoggedIn Nav.Key User.User
     | Guest Nav.Key
+
+login : User.User -> Session -> Session
+login user_ session =
+    LoggedIn (nav_key session) user_
 
 
 user: Session -> Maybe User.User

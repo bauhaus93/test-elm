@@ -1,4 +1,4 @@
-module Page exposing (Page(..), view)
+module Page exposing (Page(..), view, view_errors)
 
 import Browser
 import Html exposing (..)
@@ -24,3 +24,12 @@ view_navbar =
             li [class "nav-item"] [a [class "nav-link", href "/signup"] [text "Signup"]]
         ]
     ]
+
+view_errors : List String -> Html msg
+view_errors errors = 
+    if List.isEmpty errors  then Html.text ""
+    else
+     div [class "alert alert-danger alert-dismissible"]
+     <| List.map (\e -> p [] [text e]) errors
+
+
