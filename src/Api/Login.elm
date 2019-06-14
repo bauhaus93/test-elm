@@ -14,7 +14,7 @@ decoder : D.Decoder Login
 decoder =
     D.map2 Login
         User.decoder
-        (D.field "email" D.string)
+        (D.field "password" D.string)
 
 
 encode : Login -> E.Value
