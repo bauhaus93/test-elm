@@ -12,6 +12,7 @@ import Page.Home as Home
 import Page.Empty as Empty
 import Page.NotFound as NotFound
 import Page.Signup as Signup
+import Page.Signin as Signin
 
 -- Created based on https://github.com/rtfeldman/elm-spa-example
 
@@ -23,6 +24,7 @@ type Model
     | NotFound Session.Session
     | Home Home.Model
     | Signup Signup.Model
+    | Signin Signin.Model
 
 init : () -> Url.Url -> Nav.Key -> (Model, Cmd Msg)
 init _ url nav_key =
@@ -38,7 +40,9 @@ to_session model =
         Home home ->
             Home.to_session home
         Signup signup ->
-            Signup.to_session signup 
+            Signup.to_session signup
+        Signin signin ->
+            Signin.to_session signin
 
 
 -- UPDATE
@@ -48,6 +52,8 @@ type Msg
     | ClickedLink Browser.UrlRequest
     | GotHomeMsg Home.Msg
     | GotSignupMsg Signup.Msg
+    | GotSigninMsg Signin.Msg
+
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -84,6 +90,9 @@ change_route maybe_route model =
         Just Route.Signup ->
             Signup.init session
             |> update_with Signup GotSignupMsg model
+        Just Route.Signin ->
+            Signin.init session
+            |> update_with Signin GotSigninMsg model
 
 update_with : (sub_model -> Model) -> (sub_msg -> Msg) -> Model -> (sub_model, Cmd sub_msg) -> (Model, Cmd Msg)
 update_with to_model to_msg model (sub_model, sub_cmd) =
@@ -101,9 +110,11 @@ subscriptions model =
         Redirect _ ->
             Sub.none
         Home home ->
-            Sub.map GotHomeMsg (Home.subscriptions home)
+            Sub.none
         Signup signup ->
-            Sub.map GotSignupMsg (Signup.subscriptions signup)
+            Sub.none
+        Signin signin ->
+            Sub.none
 
 -- VIEW
 
@@ -127,7 +138,8 @@ view model =
             view_page Page.Home GotHomeMsg (Home.view home)
         Signup signup ->
             view_page Page.Signup GotSignupMsg (Signup.view signup)
-
+        Signin signin ->
+            view_page Page.Signin GotSigninMsg (Signin.view signin)
 
 
 -- MAIN

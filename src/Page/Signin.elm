@@ -1,4 +1,4 @@
-module Page.Signup exposing (Model, Msg, init, view, update, subscriptions, to_session)
+module Page.Signin exposing (Model, Msg, init, view, update, subscriptions, to_session)
 
 import Browser.Navigation as Nav
 import Html exposing (..)
@@ -15,17 +15,15 @@ import Route
 import Api.Session
 import Api.Login
 
-import Page.Fields exposing (user_entry_field, email_entry_field, password_entry_field, submit_button)
+import Page.Fields exposing (user_entry_field, password_entry_field, submit_button)
 
 -- Model
 
 type alias Model =
     { session: Session.Session
     , username: String
-    , email: String
     , password: String
     , error_list: List String
-    , success_list: List String
     }
 
 
@@ -33,10 +31,8 @@ init : Session.Session -> (Model, Cmd Msg)
 init session =
     (   { session = session
         , username = ""
-        , email = ""
         , password = ""
         , error_list = []
-        , success_list = []
         }
     , Cmd.none
     )
@@ -48,21 +44,18 @@ to_session model =
 -- Update
 
 type Msg
-    = RequestSignup
+    = RequestSignin
     | UsernameChanged String
-    | EmailChanged String
     | PasswordChanged String
     | GotReply (Result Http.Error Api.Session.Session)
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
-        RequestSignup ->
-            request_signup model
+        RequestSignin ->
+            request_signin model
         UsernameChanged username ->
             ({ model | username = username }, Cmd.none)
-        EmailChanged email ->
-            ({ model | email = email }, Cmd.none)
         PasswordChanged password ->
             ({ model | password = password }, Cmd.none)
         GotReply result ->
@@ -73,14 +66,14 @@ update msg model =
                     in
                     ({ model | session = new_session }, Route.replace_url (Session.nav_key new_session) Route.Home)
                 Err _ ->
-                    ({ model | error_list = "Could not create user" :: model.error_list}, Cmd.none)
+                    ({ model | error_list = "Could not sign in" :: model.error_list}, Cmd.none)
 
 
-request_signup : Model -> (Model, Cmd Msg)
-request_signup model =
-    ( { model | error_list = [], success_list = [] }
+request_signin : Model -> (Model, Cmd Msg)
+request_signin model =
+    ( { model | error_list = [] }
     , Http.post
-        { url = Route.to_string Route.Signup
+        { url = Route.to_string Route.Signin
         , body = create_request model
         , expect = Http.expectJson GotReply Api.Session.decoder
         }
@@ -90,7 +83,7 @@ create_request: Model -> Http.Body
 create_request model =
     let
         login =
-            { user = { name = model.username, email = model.email }
+            { user = { name = model.username, email = "" }
             , password = model.password
             }
     in
@@ -106,18 +99,16 @@ subscriptions _ =
 
 view : Model -> { title : String, content : Html Msg }
 view model =
-    { title = "Signup"
+    { title = "Signin"
     , content =
         div [class "container"] [
             (Page.view_errors model.error_list),
-            (Page.view_successes model.success_list),
-            h1 [][text "Sign up"],
+            h1 [][text "Sign in"],
             div [class "input-group"] [
-                Html.form[onSubmit RequestSignup] [
+                Html.form[onSubmit RequestSignin] [
                     (user_entry_field "Name" "name" UsernameChanged),
-                    (email_entry_field "Email" "email" EmailChanged),
                     (password_entry_field "Password" "password" PasswordChanged),
-                    (submit_button "Create")
+                    (submit_button "Login")
                 ]
             ]
         ]

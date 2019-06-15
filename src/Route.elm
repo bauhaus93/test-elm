@@ -1,4 +1,4 @@
-module Route exposing (Route(..), from_url, replace_url)
+module Route exposing (Route(..), from_url, replace_url, to_string)
 
 import Browser.Navigation as Nav
 import Url
@@ -8,6 +8,7 @@ import Url.Parser as Parser
 type Route
     = Home
     | Signup
+    | Signin
 
 
 parser: Parser.Parser (Route -> a) a
@@ -15,6 +16,7 @@ parser =
     Parser.oneOf
         [ Parser.map Home Parser.top
         , Parser.map Signup (Parser.s "signup")
+        , Parser.map Signin (Parser.s "signin")
         ]
 
 from_url: Url.Url -> Maybe Route
@@ -32,3 +34,5 @@ to_string route =
             "/"
         Signup ->
             "/signup"
+        Signin ->
+            "/signin"

@@ -10,6 +10,7 @@ type Page
     = Other
     | Home
     | Signup
+    | Signin
 
 view : Page -> Session.Session -> { title: String, content: Html msg } -> Browser.Document msg
 view page session { title, content } =
@@ -24,7 +25,8 @@ view_navbar session =
         a [class "navbar-brand", href "/"] [text "Navbar"],
         ul [class "navbar-nav mr-auto"] [
             view_session_status session,
-            li [class "nav-item"] [a [class "nav-link", href "/signup"] [text "Signup"]]
+            li [class "nav-item"] [a [class "nav-link", href "/signup"] [text "Signup"]],
+            li [class "nav-item"] [a [class "nav-link", href "/signin"] [text "Signin"]]
         ]
     ]
 
