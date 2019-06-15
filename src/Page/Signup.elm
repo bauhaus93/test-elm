@@ -21,7 +21,8 @@ type alias Model =
     , username: String
     , email: String
     , password: String
-    , errors: List String
+    , error_list: List String
+    , success_list: List String
     }
 
 
@@ -31,7 +32,8 @@ init session =
         , username = ""
         , email = ""
         , password = ""
-        , errors = []
+        , error_list = []
+        , success_list = []
         }
     , Cmd.none
     )
@@ -63,14 +65,14 @@ update msg model =
         GotReply result ->
             case result of
                 Ok api_session ->
-                    ({ model | session = (Session.login api_session)  model.session, errors = api_session.id :: model.errors }, Cmd.none)
+                    ({ model | session = (Session.login api_session)  model.session, success_list = api_session.id :: model.success_list }, Cmd.none)
                 Err _ ->
-                    ({ model | errors = "Could not create user" :: model.errors}, Cmd.none)
+                    ({ model | error_list = "Could not create user" :: model.error_list}, Cmd.none)
 
 
 request_signup : Model -> (Model, Cmd Msg)
 request_signup model =
-    ( { model | errors = [] }
+    ( { model | error_list = [], success_list = [] }
     , Http.post
         { url = "signup"
         , body = create_request model
@@ -101,7 +103,8 @@ view model =
     { title = "Signup"
     , content =
         div [class "container"] [
-            (Page.view_errors model.errors),
+            (Page.view_errors model.error_list),
+            (Page.view_successes model.success_list),
             h1 [][text "Sign up"],
             div [class "input-group"] [
                 Html.form[onSubmit RequestSignup] [

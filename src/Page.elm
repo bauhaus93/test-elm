@@ -1,4 +1,4 @@
-module Page exposing (Page(..), view, view_errors)
+module Page exposing (Page(..), view, view_errors, view_successes)
 
 import Browser
 import Html exposing (..)
@@ -26,10 +26,17 @@ view_navbar =
     ]
 
 view_errors : List String -> Html msg
-view_errors errors = 
-    if List.isEmpty errors  then Html.text ""
+view_errors error_list = 
+    if List.isEmpty error_list  then Html.text ""
     else
      div [class "alert alert-danger alert-dismissible"]
-     <| List.map (\e -> p [] [text e]) errors
+     <| List.map (\e -> p [] [text e]) error_list
+
+view_successes : List String -> Html msg
+view_successes success_list = 
+    if List.isEmpty success_list  then Html.text ""
+    else
+     div [class "alert alert-success alert-dismissible"]
+     <| List.map (\e -> p [] [text e]) success_list
 
 
