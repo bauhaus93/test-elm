@@ -72,6 +72,9 @@ update msg model =
         (GotSignupMsg sub_msg, Signup signup) ->
             Signup.update sub_msg signup
             |> update_with Signup GotSignupMsg model
+        (GotSigninMsg sub_msg, Signin signin) ->
+            Signin.update sub_msg signin
+            |> update_with Signin GotSigninMsg model
         (_, _) ->
             (model, Cmd.none)
 
