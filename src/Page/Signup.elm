@@ -10,6 +10,7 @@ import Json.Decode exposing (Decoder, field, string)
 
 import Session
 import Page
+import Route
 
 import Api.Session
 import Api.Login
@@ -65,7 +66,10 @@ update msg model =
         GotReply result ->
             case result of
                 Ok api_session ->
-                    ({ model | session = (Session.login api_session)  model.session, success_list = api_session.id :: model.success_list }, Cmd.none)
+                    let
+                        new_session = (Session.login api_session) model.session
+                    in
+                    ({ model | session = new_session }, Route.replace_url (Session.nav_key new_session) Route.Home)
                 Err _ ->
                     ({ model | error_list = "Could not create user" :: model.error_list}, Cmd.none)
 

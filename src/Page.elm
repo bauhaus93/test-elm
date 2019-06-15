@@ -4,26 +4,37 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 
+import Session
+
 type Page
     = Other
     | Home
     | Signup
 
-view : Page -> { title: String, content: Html msg } -> Browser.Document msg
-view page { title, content} =
+view : Page -> Session.Session -> { title: String, content: Html msg } -> Browser.Document msg
+view page session { title, content } =
     { title = title
-    , body = view_navbar :: [content]
+    , body = view_navbar session :: [content]
     }
 
 
-view_navbar : Html msg
-view_navbar =
+view_navbar : Session.Session -> Html msg
+view_navbar session =
     nav [class "navbar navbar-expand-lg navbar-light bg-light"] [
         a [class "navbar-brand", href "/"] [text "Navbar"],
         ul [class "navbar-nav mr-auto"] [
+            view_session_status session,
             li [class "nav-item"] [a [class "nav-link", href "/signup"] [text "Signup"]]
         ]
     ]
+
+view_session_status : Session.Session -> Html msg
+view_session_status session =
+    case session of
+        Session.Guest _ ->
+            li [class "nav-item nav-link"] [text "Not logged in"]
+        Session.LoggedIn _ _ ->
+            li [class "nav-item nav-link"] [text "Logged in"]   
 
 view_errors : List String -> Html msg
 view_errors error_list = 

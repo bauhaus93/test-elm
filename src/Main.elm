@@ -112,7 +112,7 @@ view model =
     let 
         view_page page to_msg config =
             let { title, body } =
-                    Page.view page config
+                    Page.view page (to_session model) config
             in
                 { title = title
                 , body = List.map (Html.map to_msg) body
@@ -120,9 +120,9 @@ view model =
     in
     case model of
         Redirect _ ->
-            Page.view Page.Other Empty.view
+            Page.view Page.Other (to_session model) Empty.view
         NotFound _ ->
-            Page.view Page.Other NotFound.view
+            Page.view Page.Other (to_session model) NotFound.view
         Home home ->
             view_page Page.Home GotHomeMsg (Home.view home)
         Signup signup ->
