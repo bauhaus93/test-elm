@@ -1,0 +1,6 @@
+172.17.0.1 - - [04/Nov/2019:13:20:45 +0000] "GET / HTTP/1.1" 200 1150 "-" "Mozilla/5.0 (X11; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0"
+172.17.0.1 - - [04/Nov/2019:13:20:45 +0000] "GET /custom.css HTTP/1.1" 200 0 "http://localhost/" "Mozilla/5.0 (X11; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0"
+172.17.0.1 - - [04/Nov/2019:13:20:51 +0000] "GET / HTTP/1.1" 304 0 "-" "Mozilla/5.0 (X11; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0"
+172.17.0.1 - - [04/Nov/2019:13:20:51 +0000] "GET /custom.css HTTP/1.1" 304 0 "http://localhost/" "Mozilla/5.0 (X11; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0"
+172.17.0.1 - - [04/Nov/2019:13:20:51 +0000] "GET /main.js HTTP/1.1" 200 164626 "http://localhost/" "Mozilla/5.0 (X11; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0"
+172.17.0.1 - - [04/Nov/2019:13:21:03 +0000] "POST /api/signup HTTP/1.1" 502 157 "http://localhost/signup" "Mozilla/5.0 (X11; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0"

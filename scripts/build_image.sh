@@ -8,7 +8,8 @@ then
 fi
 source $PATH_ENV
 
-elm make src/Main.elm --output="$PATH_ASSETS/main.js" && \
+echo "Building docker image $IMAGE_NAME from file $PATH_NGINX_DOCKERFILE"
+docker build -t "$IMAGE_NAME:latest" - < $PATH_NGINX_DOCKERFILE &&
 exit 0
 
 exit 1
