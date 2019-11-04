@@ -73,7 +73,7 @@ request_signin : Model -> (Model, Cmd Msg)
 request_signin model =
     ( { model | error_list = [] }
     , Http.post
-        { url = Route.to_string Route.Signin
+        { url = "api/signin" -- Route.to_string Route.Signin
         , body = create_request model
         , expect = Http.expectJson GotReply Api.Session.decoder
         }

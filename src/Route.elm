@@ -33,6 +33,6 @@ to_string route =
         Home ->
             "/"
         Signup ->
-            "/signup"
+            "signup"
         Signin ->
             "/signin"

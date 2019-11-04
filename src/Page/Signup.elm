@@ -80,7 +80,7 @@ request_signup : Model -> (Model, Cmd Msg)
 request_signup model =
     ( { model | error_list = [], success_list = [] }
     , Http.post
-        { url = Route.to_string Route.Signup
+        { url = "api/signup" --Route.to_string Route.Signup
         , body = create_request model
         , expect = Http.expectJson GotReply Api.Session.decoder
         }
