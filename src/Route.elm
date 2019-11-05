@@ -22,7 +22,7 @@ parser =
 
 from_url : Url.Url -> Maybe Route
 from_url url =
-    Parser.parse parser url
+    Parser.parse parser { url | path = Maybe.withDefault "" url.fragment, fragment = Nothing }
 
 
 replace_url : Nav.Key -> Route -> Cmd msg

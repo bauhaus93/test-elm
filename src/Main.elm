@@ -30,7 +30,7 @@ type Model
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init _ url nav_key =
-    change_route (Just Route.Home) (Redirect (Session.Guest nav_key))
+    change_route (Route.from_url url) (Redirect (Session.Guest nav_key))
 
 
 to_session : Model -> Session.Session
