@@ -3,10 +3,12 @@ module Api.User exposing (User, decoder, encode)
 import Json.Decode as D
 import Json.Encode as E
 
+
 type alias User =
-    { name: String
-    , email: String
+    { name : String
+    , email : String
     }
+
 
 decoder : D.Decoder User
 decoder =
@@ -18,6 +20,6 @@ decoder =
 encode : User -> E.Value
 encode user =
     E.object
-        [ ("name", E.string user.name)
-        , ("email", E.string user.email)
+        [ ( "name", E.string user.name )
+        , ( "email", E.string user.email )
         ]

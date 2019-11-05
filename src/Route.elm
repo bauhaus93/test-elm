@@ -11,7 +11,7 @@ type Route
     | Signin
 
 
-parser: Parser.Parser (Route -> a) a
+parser : Parser.Parser (Route -> a) a
 parser =
     Parser.oneOf
         [ Parser.map Home Parser.top
@@ -19,20 +19,25 @@ parser =
         , Parser.map Signin (Parser.s "signin")
         ]
 
-from_url: Url.Url -> Maybe Route
+
+from_url : Url.Url -> Maybe Route
 from_url url =
     Parser.parse parser url
+
 
 replace_url : Nav.Key -> Route -> Cmd msg
 replace_url key route =
     Nav.replaceUrl key (to_string route)
+
 
 to_string : Route -> String
 to_string route =
     case route of
         Home ->
             "/"
+
         Signup ->
             "signup"
+
         Signin ->
             "/signin"

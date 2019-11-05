@@ -1,14 +1,15 @@
 module Api.Login exposing (Login, decoder, encode)
 
+import Api.User as User
 import Json.Decode as D
 import Json.Encode as E
 
-import Api.User as User
 
 type alias Login =
-    { user: User.User
-    , password: String
+    { user : User.User
+    , password : String
     }
+
 
 decoder : D.Decoder Login
 decoder =
@@ -20,6 +21,6 @@ decoder =
 encode : Login -> E.Value
 encode login =
     E.object
-        [ ("user", (User.encode login.user))
-        , ("password", E.string login.password)
+        [ ( "user", User.encode login.user )
+        , ( "password", E.string login.password )
         ]
