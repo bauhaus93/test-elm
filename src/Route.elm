@@ -22,7 +22,8 @@ parser =
 
 from_url : Url.Url -> Maybe Route
 from_url url =
-    Parser.parse parser { url | path = Maybe.withDefault "" url.fragment, fragment = Nothing }
+    { url | path = url.path ++ Maybe.withDefault "" url.fragment, fragment = Nothing }
+        |> Parser.parse parser
 
 
 replace_url : Nav.Key -> Route -> Cmd msg
@@ -32,12 +33,16 @@ replace_url key route =
 
 to_string : Route -> String
 to_string route =
-    case route of
-        Home ->
-            "/"
+    let
+        pieces =
+            case route of
+                Home ->
+                    []
 
-        Signup ->
-            "signup"
+                Signup ->
+                    [ "signup" ]
 
-        Signin ->
-            "/signin"
+                Signin ->
+                    [ "signin" ]
+    in
+    String.join "/" pieces

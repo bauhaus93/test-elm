@@ -27,30 +27,26 @@ set winwidth=1
 exe 'vert 1resize ' . ((&columns * 135 + 135) / 271)
 exe 'vert 2resize ' . ((&columns * 135 + 135) / 271)
 argglobal
-let s:l = 24 - ((23 * winheight(0) + 38) / 76)
+let s:l = 26 - ((25 * winheight(0) + 38) / 77)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-24
-normal! 0
+26
+normal! 03|
 wincmd w
 argglobal
 if bufexists("src/Main.elm") | buffer src/Main.elm | else | edit src/Main.elm | endif
-let s:l = 33 - ((32 * winheight(0) + 38) / 76)
+let s:l = 80 - ((38 * winheight(0) + 38) / 77)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-33
-normal! 05|
+80
+normal! 0
 wincmd w
-2wincmd w
 exe 'vert 1resize ' . ((&columns * 135 + 135) / 271)
 exe 'vert 2resize ' . ((&columns * 135 + 135) / 271)
 tabnext 1
-badd +6 src/Api/Session.elm
-badd +73 src/Page/Signin.elm
 badd +0 src/Main.elm
-badd +13 nginx/www/index.html
 badd +0 src/Route.elm
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0
   silent exe 'bwipe ' . s:wipebuf
