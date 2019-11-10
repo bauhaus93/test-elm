@@ -34,12 +34,11 @@ view_navbar session =
 
 view_session_status : Session.Session -> Html msg
 view_session_status session =
-    case session of
-        Session.Guest _ ->
-            li [ class "nav-item nav-link" ] [ text "Not logged in" ]
-
-        Session.LoggedIn _ _ ->
-            li [ class "nav-item nav-link" ] [ text "Logged in" ]
+    let
+        name =
+            Session.get_session_username session
+    in
+    li [ class "nav-item nav-link" ] [ text name ]
 
 
 view_errors : List String -> Html msg

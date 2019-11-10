@@ -81,7 +81,7 @@ update msg model =
                         new_session =
                             Session.login api_session model.session
                     in
-                    ( { model | session = new_session }, Route.replace_url (Session.nav_key new_session) Route.Home )
+                    ( { model | session = new_session }, Route.replace_url (Session.get_nav_key new_session) Route.Home )
 
                 Err _ ->
                     ( { model | error_list = "Could not create user" :: model.error_list }, Cmd.none )

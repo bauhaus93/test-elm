@@ -73,7 +73,7 @@ update msg model =
         ( ClickedLink request, _ ) ->
             case request of
                 Browser.Internal url ->
-                    ( model, Nav.pushUrl (Session.nav_key (to_session model)) (Url.toString url) )
+                    ( model, Nav.pushUrl (Session.get_nav_key (to_session model)) (Url.toString url) )
 
                 Browser.External url ->
                     ( model, Nav.load url )
