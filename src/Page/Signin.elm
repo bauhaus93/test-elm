@@ -8,6 +8,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onSubmit)
 import Http
+import HttpRequest
 import Json.Decode exposing (Decoder, field, string)
 import Page
 import Page.Fields exposing (password_entry_field, submit_button, user_entry_field)
@@ -25,6 +26,7 @@ type alias Model =
     , username : String
     , password : String
     , error_list : List String
+    , success_list: List String
     }
 
 
@@ -34,6 +36,7 @@ init session =
       , username = ""
       , password = ""
       , error_list = []
+      , success_list = []
       }
     , Cmd.none
     )
@@ -53,7 +56,7 @@ type Msg
     | RequestUser
     | UsernameChanged String
     | PasswordChanged String
-    | GotReply (Result Http.Error Api.Session.Session)
+    | GotSignInReply (Result Http.Error Api.Session.Session)
     | GotUserInfoReply (Result Http.Error Api.User.User)
 
 
@@ -72,21 +75,21 @@ update msg model =
         PasswordChanged password ->
             ( { model | password = password }, Cmd.none )
 
-        GotReply result ->
-            case result of
+        GotSignInReply result ->
+            case HttpRequest.handle_reply result of
                 Ok api_session ->
                     let
                         new_session =
                             Session.login api_session model.session
                     in
-                    { model | session = new_session }
+                    { model | session = new_session, success_list = "Successfully signed in" :: model.success_list }
                         |> request_user_info
 
-                Err _ ->
-                    ( { model | error_list = "Could not sign in" :: model.error_list }, Cmd.none )
+                Err e ->
+                    ( { model | error_list = String.concat [ "Could not sign in: ", e ] :: model.error_list }, Cmd.none )
 
         GotUserInfoReply result ->
-            case result of
+            case HttpRequest.handle_reply result of
                 Ok user ->
                     let
                         updated_session =
@@ -96,50 +99,37 @@ update msg model =
                     , Cmd.none
                     )
 
-                Err _ ->
-                    ( { model | error_list = "Could not get user info" :: model.error_list }, Cmd.none )
+                Err e ->
+                    ( { model | error_list = String.concat [ "Could not get user info: ", e ] :: model.error_list }, Cmd.none )
+
+
+login_from_model : Model -> Api.Login.Login
+login_from_model model =
+    { user =
+        { name = model.username
+        , email = ""
+        }
+    , password = model.password
+    }
+
+
+session_from_model : Model -> Api.Session.Session
+session_from_model model =
+    Session.get_session model.session
 
 
 request_signin : Model -> ( Model, Cmd Msg )
 request_signin model =
-    ( { model | error_list = [] }
-    , Http.post
-        { url = "api/signin" -- Route.to_string Route.Signin
-        , body = create_request model
-        , expect = Http.expectJson GotReply Api.Session.decoder
-        }
+    ( { model | error_list = [], success_list = [] }
+    , HttpRequest.create_post "api/signin" model login_from_model GotSignInReply Api.Login.encode Api.Session.decoder
     )
 
 
 request_user_info : Model -> ( Model, Cmd Msg )
 request_user_info model =
-    ( { model | error_list = [] }
-    , Http.post
-        { url = "api/sessionuser"
-        , body = create_user_info_request model
-        , expect = Http.expectJson GotUserInfoReply Api.User.decoder
-        }
+    ( model
+    , HttpRequest.create_post "api/sessionuser" model session_from_model GotUserInfoReply Api.Session.encode Api.User.decoder
     )
-
-
-create_request : Model -> Http.Body
-create_request model =
-    let
-        login =
-            { user = { name = model.username, email = "" }
-            , password = model.password
-            }
-    in
-    Http.jsonBody (Api.Login.encode login)
-
-
-create_user_info_request : Model -> Http.Body
-create_user_info_request model =
-    let
-        session =
-            Session.get_session model.session
-    in
-    Http.jsonBody (Api.Session.encode session)
 
 
 
@@ -161,6 +151,7 @@ view model =
     , content =
         div [ class "container" ]
             [ Page.view_errors model.error_list
+            , Page.view_successes model.success_list
             , h1 [] [ text "Sign in" ]
             , div [ class "input-group" ]
                 [ Html.form [ onSubmit RequestSignin ]

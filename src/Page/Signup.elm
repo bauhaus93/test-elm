@@ -7,6 +7,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onSubmit)
 import Http
+import HttpRequest
 import Json.Decode exposing (Decoder, field, string)
 import Page
 import Page.Fields exposing (email_entry_field, password_entry_field, submit_button, user_entry_field)
@@ -56,7 +57,7 @@ type Msg
     | UsernameChanged String
     | EmailChanged String
     | PasswordChanged String
-    | GotReply (Result Http.Error Api.Session.Session)
+    | GotSignUpReply (Result Http.Error Api.Session.Session)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -74,39 +75,34 @@ update msg model =
         PasswordChanged password ->
             ( { model | password = password }, Cmd.none )
 
-        GotReply result ->
-            case result of
+        GotSignUpReply result ->
+            case HttpRequest.handle_reply result of
                 Ok api_session ->
                     let
                         new_session =
                             Session.login api_session model.session
                     in
-                    ( { model | session = new_session }, Route.replace_url (Session.get_nav_key new_session) Route.Home )
+                    ( { model | session = new_session, success_list = "Successfully created account" :: model.success_list }, Route.replace_url (Session.get_nav_key new_session) Route.Home )
 
-                Err _ ->
-                    ( { model | error_list = "Could not create user" :: model.error_list }, Cmd.none )
+                Err e ->
+                    ( { model | error_list = String.concat [ "Could not create user: ", e ] :: model.error_list }, Cmd.none )
+
+
+login_from_model : Model -> Api.Login.Login
+login_from_model model =
+    { user =
+        { name = model.username
+        , email = model.email
+        }
+    , password = model.password
+    }
 
 
 request_signup : Model -> ( Model, Cmd Msg )
 request_signup model =
     ( { model | error_list = [], success_list = [] }
-    , Http.post
-        { url = "api/signup" --Route.to_string Route.Signup
-        , body = create_request model
-        , expect = Http.expectJson GotReply Api.Session.decoder
-        }
+    , HttpRequest.create_post "api/signup" model login_from_model GotSignUpReply Api.Login.encode Api.Session.decoder
     )
-
-
-create_request : Model -> Http.Body
-create_request model =
-    let
-        login =
-            { user = { name = model.username, email = model.email }
-            , password = model.password
-            }
-    in
-    Http.jsonBody (Api.Login.encode login)
 
 
 
