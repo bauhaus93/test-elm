@@ -26,7 +26,7 @@ type alias Model =
     , username : String
     , password : String
     , error_list : List String
-    , success_list: List String
+    , success_list : List String
     }
 
 
@@ -76,31 +76,37 @@ update msg model =
             ( { model | password = password }, Cmd.none )
 
         GotSignInReply result ->
-            case HttpRequest.handle_reply result of
-                Ok api_session ->
-                    let
-                        new_session =
-                            Session.login api_session model.session
-                    in
-                    { model | session = new_session, success_list = "Successfully signed in" :: model.success_list }
-                        |> request_user_info
+            case HttpRequest.handle_reply result model update_model_session of
+                Ok updated_model ->
+                    request_user_info updated_model
 
                 Err e ->
                     ( { model | error_list = String.concat [ "Could not sign in: ", e ] :: model.error_list }, Cmd.none )
 
         GotUserInfoReply result ->
-            case HttpRequest.handle_reply result of
-                Ok user ->
-                    let
-                        updated_session =
-                            Session.update_user model.session user
-                    in
-                    ( { model | session = updated_session }
-                    , Cmd.none
-                    )
+            case HttpRequest.handle_reply result model update_model_session_user of
+                Ok updated_model ->
+                    ( updated_model, Cmd.none )
 
                 Err e ->
                     ( { model | error_list = String.concat [ "Could not get user info: ", e ] :: model.error_list }, Cmd.none )
+
+
+update_model_session : Model -> Api.Session.Session -> Model
+update_model_session model api_session =
+    let
+        new_session =
+            Session.login api_session model.session
+
+        success_list =
+            "Sucessfully logged in" :: model.success_list
+    in
+    { model | session = new_session, success_list = success_list }
+
+
+update_model_session_user : Model -> Api.User.User -> Model
+update_model_session_user model api_user =
+    { model | session = Session.update_user model.session api_user }
 
 
 login_from_model : Model -> Api.Login.Login

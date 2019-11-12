@@ -76,16 +76,26 @@ update msg model =
             ( { model | password = password }, Cmd.none )
 
         GotSignUpReply result ->
-            case HttpRequest.handle_reply result of
-                Ok api_session ->
-                    let
-                        new_session =
-                            Session.login api_session model.session
-                    in
-                    ( { model | session = new_session, success_list = "Successfully created account" :: model.success_list }, Route.replace_url (Session.get_nav_key new_session) Route.Home )
+            case HttpRequest.handle_reply result model update_model_session of
+                Ok updated_model ->
+                    ( updated_model
+                    , Route.replace_url (Session.get_nav_key model.session) Route.Home
+                    )
 
                 Err e ->
                     ( { model | error_list = String.concat [ "Could not create user: ", e ] :: model.error_list }, Cmd.none )
+
+
+update_model_session : Model -> Api.Session.Session -> Model
+update_model_session model api_session =
+    let
+        new_session =
+            Session.login api_session model.session
+
+        success_list =
+            "Sucessfully logged in" :: model.success_list
+    in
+    { model | session = new_session, success_list = success_list }
 
 
 login_from_model : Model -> Api.Login.Login

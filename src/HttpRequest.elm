@@ -43,11 +43,11 @@ expectJson to_msg decoder =
                             Err (Http.BadBody (D.errorToString e))
 
 
-handle_reply : Result Http.Error a -> Result String a
-handle_reply result =
+handle_reply : Result Http.Error a -> mod -> (mod -> a -> mod) -> Result String mod
+handle_reply result model model_updater =
     case result of
         Ok a ->
-            Ok a
+            Ok (model_updater model a)
 
         Err e ->
             case e of
